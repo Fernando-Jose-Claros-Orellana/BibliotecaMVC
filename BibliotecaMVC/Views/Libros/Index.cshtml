@@ -1,0 +1,45 @@
+@using BibliotecaMVC.Models
+@{
+    ViewData["Title"] = "Libros";
+}
+
+@{
+    List<Libro> libros = ViewBag.Libros;
+}
+
+<h2>Catálogo de libros</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Título</th>
+            <th>Autor</th>
+            <th>Categoría</th>
+            <th>Precio</th>
+            <th>Estado</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var libro in libros)
+        {
+            <tr>
+                <td>@libro.Id</td>
+                <td>@libro.Titulo</td>
+                <td>@libro.Autor</td>
+                <td>@libro.Categoria</td>
+                <td>$@libro.Precio</td>
+                <td>
+                    @if (libro.Disponible)
+                    {
+                        <span class="badge bg-success">Disponible</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">Prestado</span>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
