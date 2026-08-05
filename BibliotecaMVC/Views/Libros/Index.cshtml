@@ -17,6 +17,7 @@
             <th>Categoría</th>
             <th>Precio</th>
             <th>Estado</th>
+            <th>Imagen</th>
             <th>Acciones</th>
         </tr>
     </thead>
@@ -37,6 +38,16 @@
                     else
                     {
                         <span class="badge bg-danger">Prestado</span>
+                    }
+                </td>
+                <td>
+                    @if (!string.IsNullOrEmpty(libro.ImagenUrl))
+                    {
+                        <img src="@libro.ImagenUrl" alt="Portada de @libro.Titulo" style="width: 60px; height: 80px; object-fit: cover;" />
+                    }
+                    else
+                    {
+                        <span>Sin imagen</span>
                     }
                 </td>
                 <td>

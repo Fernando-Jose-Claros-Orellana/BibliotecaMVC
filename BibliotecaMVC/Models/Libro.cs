@@ -8,5 +8,6 @@ namespace BibliotecaMVC.Models
         public string Categoria { get; set; } = string.Empty;
         public decimal Precio { get; set; }
         public bool Disponible { get; set; }
+        public string? ImagenUrl { get; set; }
     }
 }

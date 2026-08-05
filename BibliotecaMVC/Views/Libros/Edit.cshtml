@@ -5,7 +5,7 @@
 
 <h2>Editar libro</h2>
 
-<form asp-action="Edit" method="post">
+<form asp-action="Edit" method="post" enctype="multipart/form-data">
     <input type="hidden" asp-for="Id" />
     <div class="mb-3">
         <label asp-for="Titulo" class="form-label"></label>
@@ -31,6 +31,22 @@
         <input asp-for="Disponible" class="form-check-input" />
         <label asp-for="Disponible" class="form-check-label"></label>
         <span asp-validation-for="Disponible" class="text-danger"></span>
+    </div>
+    @if (!string.IsNullOrEmpty(Model.ImagenUrl))
+    {
+        <div class="mb-3">
+            <label class="form-label">Imagen actual</label><br />
+            <img src="@Model.ImagenUrl"
+                 alt="Portada actual de @Model.Titulo"
+                 style="width: 120px; height: 160px; object-fit: cover;"
+                 class="img-thumbnail" />
+        </div>
+    }
+
+    <div class="mb-3">
+        <label for="imagen" class="form-label">Nueva imagen de portada (opcional)</label>
+        <input type="file" id="imagen" name="imagen" class="form-control" />
+        <small class="text-muted">Si no seleccionas una imagen, se conservará la actual.</small>
     </div>
     <button type="submit" class="btn btn-warning">Guardar cambios</button>
     <a asp-action="Index" class="btn btn-secondary">Cancelar</a>

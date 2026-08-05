@@ -35,7 +35,7 @@ namespace BibliotecaMVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Libro libro)
+        public async Task<IActionResult> Create(Libro libro, IFormFile? imagen)
         {
             if (!ModelState.IsValid)
             {
@@ -43,6 +43,23 @@ namespace BibliotecaMVC.Controllers
             }
 
             libro.Id = _libros.Any() ? _libros.Max(l => l.Id) + 1 : 1;
+
+            if (imagen != null && imagen.Length > 0)
+            {
+                string carpetaImagenes = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
+                Directory.CreateDirectory(carpetaImagenes);
+
+                string nombreArchivo = Guid.NewGuid().ToString() + Path.GetExtension(imagen.FileName);
+                string rutaArchivo = Path.Combine(carpetaImagenes, nombreArchivo);
+
+                using (FileStream stream = new FileStream(rutaArchivo, FileMode.Create))
+                {
+                    await imagen.CopyToAsync(stream);
+                }
+
+                libro.ImagenUrl = "/images/" + nombreArchivo;
+            }
+
             _libros.Add(libro);
 
             return RedirectToAction(nameof(Index));
@@ -62,7 +79,7 @@ namespace BibliotecaMVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(Libro libro)
+        public async Task<IActionResult> Edit(Libro libro, IFormFile? imagen)
         {
             if (!ModelState.IsValid)
             {
@@ -81,6 +98,34 @@ namespace BibliotecaMVC.Controllers
             libroExistente.Categoria = libro.Categoria;
             libroExistente.Precio = libro.Precio;
             libroExistente.Disponible = libro.Disponible;
+
+            if (imagen != null && imagen.Length > 0)
+            {
+                string carpetaImagenes = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
+                Directory.CreateDirectory(carpetaImagenes);
+
+                string nombreArchivo = Guid.NewGuid().ToString() + Path.GetExtension(imagen.FileName);
+                string rutaArchivo = Path.Combine(carpetaImagenes, nombreArchivo);
+
+                using (FileStream stream = new FileStream(rutaArchivo, FileMode.Create))
+                {
+                    await imagen.CopyToAsync(stream);
+                }
+
+                string? imagenAnterior = libroExistente.ImagenUrl;
+                libroExistente.ImagenUrl = "/images/" + nombreArchivo;
+
+                if (!string.IsNullOrEmpty(imagenAnterior))
+                {
+                    string nombreAnterior = Path.GetFileName(imagenAnterior);
+                    string rutaAnterior = Path.Combine(carpetaImagenes, nombreAnterior);
+
+                    if (System.IO.File.Exists(rutaAnterior))
+                    {
+                        System.IO.File.Delete(rutaAnterior);
+                    }
+                }
+            }
 
             return RedirectToAction(nameof(Index));
         }
@@ -106,6 +151,18 @@ namespace BibliotecaMVC.Controllers
             if (libro == null)
             {
                 return NotFound();
+            }
+
+            if (!string.IsNullOrEmpty(libro.ImagenUrl))
+            {
+                string carpetaImagenes = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
+                string nombreArchivo = Path.GetFileName(libro.ImagenUrl);
+                string rutaArchivo = Path.Combine(carpetaImagenes, nombreArchivo);
+
+                if (System.IO.File.Exists(rutaArchivo))
+                {
+                    System.IO.File.Delete(rutaArchivo);
+                }
             }
 
             _libros.Remove(libro);

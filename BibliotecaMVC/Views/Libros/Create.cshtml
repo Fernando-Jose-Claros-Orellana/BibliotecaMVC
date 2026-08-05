@@ -5,7 +5,7 @@
 
 <h2>Crear libro</h2>
 
-<form asp-action="Create" method="post">
+<form asp-action="Create" method="post" enctype="multipart/form-data">
     <div class="mb-3">
         <label asp-for="Titulo" class="form-label"></label>
         <input asp-for="Titulo" class="form-control" />
@@ -30,6 +30,10 @@
         <input asp-for="Disponible" class="form-check-input" />
         <label asp-for="Disponible" class="form-check-label"></label>
         <span asp-validation-for="Disponible" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label for="imagen" class="form-label">Imagen de portada</label>
+        <input type="file" id="imagen" name="imagen" class="form-control" />
     </div>
     <button type="submit" class="btn btn-primary">Crear</button>
     <a asp-action="Index" class="btn btn-secondary">Cancelar</a>

@@ -5,6 +5,20 @@
 
 <h2>Detalle de libro</h2>
 
+@if (!string.IsNullOrEmpty(Model.ImagenUrl))
+{
+    <div class="mb-3">
+        <img src="@Model.ImagenUrl"
+             alt="Portada de @Model.Titulo"
+             style="width: 220px; max-height: 320px; object-fit: cover;"
+             class="img-thumbnail" />
+    </div>
+}
+else
+{
+    <p class="text-muted">Este libro no tiene imagen de portada.</p>
+}
+
 <dl>
     <dt>Título</dt>
     <dd>@Model.Titulo</dd>
