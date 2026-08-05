@@ -1,8 +1,88 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Biblioteca Virtual";
 }
 
-<div class="text-center">
-    <h1>Sistema de gestión de biblioteca</h1>
-    <p>Bienvenidos al sistema desarrollado con ASP.NET Core MVC</p>
+<div class="container py-5">
+    <div class="row align-items-center g-4 mb-5">
+        <div class="col-md-6">
+            <h1 class="display-5">Biblioteca Virtual</h1>
+            <p class="lead">Consulta libros, autores y categorías desde un solo lugar.</p>
+            <a asp-controller="Libros" asp-action="Index" class="btn btn-primary me-2">Explorar libros</a>
+            <a asp-controller="Home" asp-action="About" class="btn btn-outline-secondary">Acerca de la biblioteca</a>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow-sm rounded">
+                <div class="card-body">
+                    <h2 class="h4">Servicios disponibles</h2>
+                    <p class="mb-0">Administra el catálogo, consulta autores y organiza la información bibliográfica de forma sencilla.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h2 class="h4">Catálogo de libros</h2>
+                    <p>Explora títulos disponibles para consulta.</p>
+                    <a asp-controller="Libros" asp-action="Index" class="btn btn-primary">Ver libros</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h2 class="h4">Autores</h2>
+                    <p>Conoce los autores registrados en la biblioteca.</p>
+                    <a asp-controller="Autores" asp-action="Index" class="btn btn-primary">Conocer autores</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h2 class="h4">Categorías</h2>
+                    <p>Organiza y encuentra contenido por categoría.</p>
+                    <a asp-controller="Home" asp-action="Categorias" class="btn btn-primary">Ver categorías</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section>
+        <h2 class="h3 mb-3">Servicios de la biblioteca</h2>
+        <div class="accordion" id="libraryServices">
+            <div class="accordion-item">
+                <h3 class="accordion-header" id="catalogHeading">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#catalogService" aria-expanded="true" aria-controls="catalogService">
+                        Consulta de catálogo.
+                    </button>
+                </h3>
+                <div id="catalogService" class="accordion-collapse collapse show" aria-labelledby="catalogHeading" data-bs-parent="#libraryServices">
+                    <div class="accordion-body">Revisa libros disponibles y su información principal.</div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h3 class="accordion-header" id="loanHeading">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#loanService" aria-expanded="false" aria-controls="loanService">
+                        Gestión de préstamos.
+                    </button>
+                </h3>
+                <div id="loanService" class="accordion-collapse collapse" aria-labelledby="loanHeading" data-bs-parent="#libraryServices">
+                    <div class="accordion-body">Consulta el módulo para apoyar el control de préstamos bibliotecarios.</div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h3 class="accordion-header" id="categoryHeading">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#categoryService" aria-expanded="false" aria-controls="categoryService">
+                        Organización por categorías.
+                    </button>
+                </h3>
+                <div id="categoryService" class="accordion-collapse collapse" aria-labelledby="categoryHeading" data-bs-parent="#libraryServices">
+                    <div class="accordion-body">Encuentra contenido agrupado por categorías de interés.</div>
+                </div>
+            </div>
+        </div>
+    </section>
 </div>

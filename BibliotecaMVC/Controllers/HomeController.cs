@@ -21,6 +21,11 @@ namespace BibliotecaMVC.Controllers
             return View();
         }
 
+        public IActionResult About()
+        {
+            return View("AcercaDe");
+        }
+
         public IActionResult Prestamos()
         {
             return View();

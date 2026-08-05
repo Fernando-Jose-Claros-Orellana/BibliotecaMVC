@@ -21,6 +21,94 @@ body {
   margin-bottom: 60px;
 }
 
+:root {
+  --mainColor: #2f6fa7;
+  --softBg: #eef5fa;
+  --mainText: #243746;
+  --white: #ffffff;
+}
+
+.aboutPage {
+  color: var(--mainText);
+  margin: 1rem auto 2rem;
+  max-width: 1000px;
+}
+
+.aboutHead {
+  background: var(--mainColor);
+  border-radius: 12px;
+  color: var(--white);
+  padding: 2rem;
+  text-align: center;
+}
+
+.aboutHead h1 {
+  margin-bottom: 0.5rem;
+}
+
+.aboutHead p {
+  margin-bottom: 0;
+}
+
+.aboutWrap {
+  display: flex;
+  gap: 1.5rem;
+  margin: 1.5rem 0;
+}
+
+.aboutMain {
+  background: var(--white);
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
+  flex: 2;
+  padding: 1.5rem;
+}
+
+.aboutSide {
+  background: var(--softBg);
+  border-radius: 10px;
+  flex: 1;
+  padding: 1.5rem;
+}
+
+.aboutSide h2:not(:first-child) {
+  margin-top: 1.25rem;
+}
+
+.aboutSec {
+  margin: 1.5rem 0;
+}
+
+.serviceGrid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.serviceCard {
+  background: var(--white);
+  border: 1px solid #d9e5ee;
+  border-radius: 10px;
+  padding: 1.25rem;
+}
+
+.serviceCard h3 {
+  color: var(--mainColor);
+  font-size: 1.15rem;
+}
+
+.serviceCard p {
+  margin-bottom: 0;
+}
+
+.aboutFoot {
+  border-top: 1px solid #d9e5ee;
+  color: #5f6f7a;
+  margin-top: 2rem;
+  padding: 1rem 0;
+  text-align: center;
+}
+
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
   color: var(--bs-secondary-color);
   text-align: end;
@@ -28,4 +116,18 @@ body {
 
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
+}
+
+@media (max-width: 768px) {
+  .aboutHead {
+    padding: 1.5rem 1rem;
+  }
+
+  .aboutWrap {
+    flex-direction: column;
+  }
+
+  .serviceGrid {
+    grid-template-columns: 1fr;
+  }
 }
