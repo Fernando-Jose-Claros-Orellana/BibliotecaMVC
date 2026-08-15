@@ -3,12 +3,14 @@
 }
 
 <div class="container py-5">
-    <div class="row align-items-center g-4 mb-5">
+    <div class="row homeFlex align-items-center g-4 mb-5">
         <div class="col-md-6">
             <h1 class="display-5">Biblioteca Virtual</h1>
             <p class="lead">Consulta libros, autores y categorías desde un solo lugar.</p>
-            <a asp-controller="Libros" asp-action="Index" class="btn btn-primary me-2">Explorar libros</a>
-            <a asp-controller="Home" asp-action="About" class="btn btn-outline-secondary">Acerca de la biblioteca</a>
+            <div class="btnFlex">
+                <a asp-controller="Libros" asp-action="Index" class="btn btn-primary">Explorar libros</a>
+                <a asp-controller="Home" asp-action="About" class="btn btn-outline-secondary">Acerca de la biblioteca</a>
+            </div>
         </div>
         <div class="col-md-6">
             <div class="card shadow-sm rounded">
@@ -20,32 +22,26 @@
         </div>
     </div>
 
-    <div class="row g-4 mb-5">
-        <div class="col-md-4">
-            <div class="card h-100 shadow-sm">
-                <div class="card-body">
-                    <h2 class="h4">Catálogo de libros</h2>
-                    <p>Explora títulos disponibles para consulta.</p>
-                    <a asp-controller="Libros" asp-action="Index" class="btn btn-primary">Ver libros</a>
-                </div>
+    <div class="homeGrid mb-5">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h2 class="h4">Catálogo de libros</h2>
+                <p>Explora títulos disponibles para consulta.</p>
+                <a asp-controller="Libros" asp-action="Index" class="btn btn-primary">Ver libros</a>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card h-100 shadow-sm">
-                <div class="card-body">
-                    <h2 class="h4">Autores</h2>
-                    <p>Conoce los autores registrados en la biblioteca.</p>
-                    <a asp-controller="Autores" asp-action="Index" class="btn btn-primary">Conocer autores</a>
-                </div>
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h2 class="h4">Autores</h2>
+                <p>Conoce los autores registrados en la biblioteca.</p>
+                <a asp-controller="Autores" asp-action="Index" class="btn btn-primary">Conocer autores</a>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card h-100 shadow-sm">
-                <div class="card-body">
-                    <h2 class="h4">Categorías</h2>
-                    <p>Organiza y encuentra contenido por categoría.</p>
-                    <a asp-controller="Home" asp-action="Categorias" class="btn btn-primary">Ver categorías</a>
-                </div>
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h2 class="h4">Categorías</h2>
+                <p>Organiza y encuentra contenido por categoría.</p>
+                <a asp-controller="Home" asp-action="Categorias" class="btn btn-primary">Ver categorías</a>
             </div>
         </div>
     </div>

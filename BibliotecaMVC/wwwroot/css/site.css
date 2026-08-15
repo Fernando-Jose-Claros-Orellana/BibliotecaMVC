@@ -28,6 +28,25 @@ body {
   --white: #ffffff;
 }
 
+.homeFlex {
+  align-items: center;
+  display: flex;
+  gap: 2rem;
+  justify-content: space-between;
+}
+
+.btnFlex {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.homeGrid {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: repeat(3, 1fr);
+}
+
 .aboutPage {
   color: var(--mainText);
   margin: 1rem auto 2rem;
@@ -85,19 +104,19 @@ body {
   grid-template-columns: repeat(3, 1fr);
 }
 
-.serviceCard {
+.infoCard {
   background: var(--white);
   border: 1px solid #d9e5ee;
   border-radius: 10px;
   padding: 1.25rem;
 }
 
-.serviceCard h3 {
+.infoCard h3 {
   color: var(--mainColor);
   font-size: 1.15rem;
 }
 
-.serviceCard p {
+.infoCard p {
   margin-bottom: 0;
 }
 
@@ -119,6 +138,23 @@ body {
 }
 
 @media (max-width: 768px) {
+  .homeFlex {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .btnFlex {
+    flex-direction: column;
+  }
+
+  .btnFlex .btn {
+    width: 100%;
+  }
+
+  .homeGrid {
+    grid-template-columns: 1fr;
+  }
+
   .aboutHead {
     padding: 1.5rem 1rem;
   }
