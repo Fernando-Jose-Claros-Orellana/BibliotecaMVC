@@ -1,24 +1,27 @@
 using BibliotecaMVC.Models;
+using BibliotecaMVC.Servicios;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BibliotecaMVC.Controllers
 {
     public class LibrosController : Controller
     {
-        private static List<Libro> _libros =
-        [
-            new Libro { Id = 1, Titulo = "Clean Code", Autor = "Robert Martin", Categoria = "Programación", Precio = 35.5m, Disponible = true },
-            new Libro { Id = 2, Titulo = "Cien años de soledad", Autor = "Gabriel García Márquez", Categoria = "Literatura", Precio = 18, Disponible = false }
-        ];
+        private readonly ILibroService _libroService;
+
+        public LibrosController(ILibroService libroService)
+        {
+            _libroService = libroService;
+        }
 
         public IActionResult Index()
         {
-            return View(_libros);
+            var libros = _libroService.ObtenerTodos();
+            return View(libros);
         }
 
         public IActionResult Details(int id)
         {
-            Libro? libro = _libros.FirstOrDefault(l => l.Id == id);
+            Libro? libro = _libroService.ObtenerPorId(id);
 
             if (libro == null)
             {
@@ -42,7 +45,7 @@ namespace BibliotecaMVC.Controllers
                 return View(libro);
             }
 
-            libro.Id = _libros.Any() ? _libros.Max(l => l.Id) + 1 : 1;
+            libro.Id = _libroService.ObtenerSiguienteId();
 
             if (imagen != null && imagen.Length > 0)
             {
@@ -60,14 +63,14 @@ namespace BibliotecaMVC.Controllers
                 libro.ImagenUrl = "/images/" + nombreArchivo;
             }
 
-            _libros.Add(libro);
+            _libroService.Agregar(libro);
 
             return RedirectToAction(nameof(Index));
         }
 
         public IActionResult Edit(int id)
         {
-            Libro? libro = _libros.FirstOrDefault(l => l.Id == id);
+            Libro? libro = _libroService.ObtenerPorId(id);
 
             if (libro == null)
             {
@@ -86,7 +89,7 @@ namespace BibliotecaMVC.Controllers
                 return View(libro);
             }
 
-            Libro? libroExistente = _libros.FirstOrDefault(l => l.Id == libro.Id);
+            Libro? libroExistente = _libroService.ObtenerPorId(libro.Id);
 
             if (libroExistente == null)
             {
@@ -127,12 +130,14 @@ namespace BibliotecaMVC.Controllers
                 }
             }
 
+            _libroService.Actualizar(libroExistente);
+
             return RedirectToAction(nameof(Index));
         }
 
         public IActionResult Delete(int id)
         {
-            Libro? libro = _libros.FirstOrDefault(l => l.Id == id);
+            Libro? libro = _libroService.ObtenerPorId(id);
 
             if (libro == null)
             {
@@ -146,7 +151,7 @@ namespace BibliotecaMVC.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {
-            Libro? libro = _libros.FirstOrDefault(l => l.Id == id);
+            Libro? libro = _libroService.ObtenerPorId(id);
 
             if (libro == null)
             {
@@ -165,7 +170,7 @@ namespace BibliotecaMVC.Controllers
                 }
             }
 
-            _libros.Remove(libro);
+            _libroService.Eliminar(id);
             return RedirectToAction(nameof(Index));
         }
 

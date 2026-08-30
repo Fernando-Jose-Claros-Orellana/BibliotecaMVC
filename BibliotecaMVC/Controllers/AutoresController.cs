@@ -1,27 +1,26 @@
 using BibliotecaMVC.Models;
+using BibliotecaMVC.Servicios;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BibliotecaMVC.Controllers
 {
     public class AutoresController : Controller
     {
-        private static List<Autor> _autores =
-        [
-            new Autor { Id = 1, Nombre = "Gabriel García", Apellido = "Márquez", Nacionalidad = "Colombiana", FechaNacimiento = new DateTime(1927, 3, 6), Activo = true },
-            new Autor { Id = 2, Nombre = "Isabel", Apellido = "Allende", Nacionalidad = "Chilena", FechaNacimiento = new DateTime(1942, 8, 2), Activo = true },
-            new Autor { Id = 3, Nombre = "Jorge Luis", Apellido = "Borges", Nacionalidad = "Argentina", FechaNacimiento = new DateTime(1899, 8, 24), Activo = false },
-            new Autor { Id = 4, Nombre = "Jane", Apellido = "Austen", Nacionalidad = "Británica", FechaNacimiento = new DateTime(1775, 12, 16), Activo = false },
-            new Autor { Id = 5, Nombre = "Mario", Apellido = "Vargas Llosa", Nacionalidad = "Peruana", FechaNacimiento = new DateTime(1936, 3, 28), Activo = true }
-        ];
+        private readonly IAutorService _autorService;
+
+        public AutoresController(IAutorService autorService)
+        {
+            _autorService = autorService;
+        }
 
         public IActionResult Index()
         {
-            return View(_autores);
+            return View(_autorService.ObtenerTodos());
         }
 
         public IActionResult Details(int id)
         {
-            Autor? autor = _autores.FirstOrDefault(a => a.Id == id);
+            Autor? autor = _autorService.ObtenerPorId(id);
 
             if (autor == null)
             {
@@ -45,15 +44,15 @@ namespace BibliotecaMVC.Controllers
                 return View(autor);
             }
 
-            autor.Id = _autores.Any() ? _autores.Max(a => a.Id) + 1 : 1;
-            _autores.Add(autor);
+            autor.Id = _autorService.ObtenerSiguienteId();
+            _autorService.Agregar(autor);
 
             return RedirectToAction(nameof(Index));
         }
 
         public IActionResult Edit(int id)
         {
-            Autor? autor = _autores.FirstOrDefault(a => a.Id == id);
+            Autor? autor = _autorService.ObtenerPorId(id);
 
             if (autor == null)
             {
@@ -72,7 +71,7 @@ namespace BibliotecaMVC.Controllers
                 return View(autor);
             }
 
-            Autor? autorExistente = _autores.FirstOrDefault(a => a.Id == autor.Id);
+            Autor? autorExistente = _autorService.ObtenerPorId(autor.Id);
 
             if (autorExistente == null)
             {
@@ -85,12 +84,14 @@ namespace BibliotecaMVC.Controllers
             autorExistente.FechaNacimiento = autor.FechaNacimiento;
             autorExistente.Activo = autor.Activo;
 
+            _autorService.Actualizar(autorExistente);
+
             return RedirectToAction(nameof(Index));
         }
 
         public IActionResult Delete(int id)
         {
-            Autor? autor = _autores.FirstOrDefault(a => a.Id == id);
+            Autor? autor = _autorService.ObtenerPorId(id);
 
             if (autor == null)
             {
@@ -104,14 +105,14 @@ namespace BibliotecaMVC.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {
-            Autor? autor = _autores.FirstOrDefault(a => a.Id == id);
+            Autor? autor = _autorService.ObtenerPorId(id);
 
             if (autor == null)
             {
                 return NotFound();
             }
 
-            _autores.Remove(autor);
+            _autorService.Eliminar(id);
             return RedirectToAction(nameof(Index));
         }
     }
