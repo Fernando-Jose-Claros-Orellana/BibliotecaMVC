@@ -3,7 +3,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<BibliotecaMVC.Servicios.ILibroService, BibliotecaMVC.Servicios.LibroService>();
-builder.Services.AddScoped<BibliotecaMVC.Servicios.IAutorService, BibliotecaMVC.Servicios.AutorService>();
+builder.Services.AddScoped<BibliotecaMVC.Servicios.IAutorService, BibliotecaMVC.Servicios.AutorServiceAlternativo>();
 
 var app = builder.Build();
 
