@@ -1,0 +1,87 @@
+@using System.Text.Json
+@model IEnumerable<BibliotecaMVC.Models.Categoria>
+@{
+    ViewData["Title"] = "Listado de categorías";
+    var successMessage = TempData["SuccessMessage"] as string;
+}
+
+<h2>Listado de categorías</h2>
+
+<a asp-action="Create" class="btn btn-primary mb-3">Agregar categoría</a>
+
+@if (!string.IsNullOrEmpty(successMessage))
+{
+    <div class="alert alert-success">@successMessage</div>
+}
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">No hay categorías registradas.</div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-striped align-middle">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var categoria in Model)
+            {
+                <tr>
+                    <td>@categoria.Id</td>
+                    <td>@categoria.Nombre</td>
+                    <td>@categoria.Descripcion</td>
+                    <td class="d-flex gap-2 flex-wrap">
+                        <a asp-action="Edit" asp-route-id="@categoria.Id" class="btn btn-warning">Editar</a>
+                        <form asp-action="Delete" asp-route-id="@categoria.Id" method="post" class="m-0">
+                            <button type="button" class="btn btn-danger btn-eliminar" data-nombre="@categoria.Nombre">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+}
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        const successMessage = @Html.Raw(JsonSerializer.Serialize(successMessage));
+        if (successMessage) {
+            Swal.fire({
+                icon: 'success',
+                title: successMessage,
+                confirmButtonText: 'Aceptar'
+            });
+        }
+
+        document.querySelectorAll('.btn-eliminar').forEach(button => {
+            button.addEventListener('click', function (event) {
+                event.preventDefault();
+                const form = this.closest('form');
+                const nombre = this.dataset.nombre || '';
+
+                Swal.fire({
+                    icon: 'warning',
+                    title: '¿Eliminar categoría?',
+                    text: `Se eliminará la categoría ${nombre}.`,
+                    showCancelButton: true,
+                    confirmButtonText: 'Sí, eliminar',
+                    cancelButtonText: 'Cancelar',
+                    confirmButtonColor: '#dc3545'
+                }).then(result => {
+                    if (result.isConfirmed && form) {
+                        form.submit();
+                    }
+                });
+            });
+        });
+    </script>
+}
