@@ -8,5 +8,6 @@ namespace BibliotecaMVC.Models
         public string Nacionalidad { get; set; } = string.Empty;
         public DateTime FechaNacimiento { get; set; }
         public bool Activo { get; set; }
+        public ICollection<Libro> Libros { get; set; } = new List<Libro>();
     }
 }

@@ -1,41 +1,42 @@
 @model BibliotecaMVC.Models.Libro
 @{
-    ViewData["Title"] = "Crear libro";
+    ViewData["Title"] = "Agregar libro";
 }
 
-<h2>Crear libro</h2>
+<h2>Agregar libro</h2>
 
-<form asp-action="Create" method="post" enctype="multipart/form-data">
+<form asp-action="Create" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="mb-3">
         <label asp-for="Titulo" class="form-label"></label>
         <input asp-for="Titulo" class="form-control" />
         <span asp-validation-for="Titulo" class="text-danger"></span>
     </div>
     <div class="mb-3">
-        <label asp-for="Autor" class="form-label"></label>
-        <input asp-for="Autor" class="form-control" />
-        <span asp-validation-for="Autor" class="text-danger"></span>
+        <label asp-for="ISBN" class="form-label"></label>
+        <input asp-for="ISBN" class="form-control" />
+        <span asp-validation-for="ISBN" class="text-danger"></span>
     </div>
     <div class="mb-3">
-        <label asp-for="Categoria" class="form-label"></label>
-        <input asp-for="Categoria" class="form-control" />
-        <span asp-validation-for="Categoria" class="text-danger"></span>
+        <label asp-for="AnioPublicacion" class="form-label">Año de publicación</label>
+        <input asp-for="AnioPublicacion" type="number" class="form-control" />
+        <span asp-validation-for="AnioPublicacion" class="text-danger"></span>
     </div>
     <div class="mb-3">
-        <label asp-for="Precio" class="form-label"></label>
-        <input asp-for="Precio" type="number" step="0.01" class="form-control" />
-        <span asp-validation-for="Precio" class="text-danger"></span>
-    </div>
-    <div class="form-check mb-3">
-        <input asp-for="Disponible" class="form-check-input" />
-        <label asp-for="Disponible" class="form-check-label"></label>
-        <span asp-validation-for="Disponible" class="text-danger"></span>
+        <label asp-for="AutorId" class="form-label">Autor</label>
+        <select asp-for="AutorId" asp-items="ViewBag.Autores" class="form-select">
+            <option value="">-- Seleccione un autor --</option>
+        </select>
+        <span asp-validation-for="AutorId" class="text-danger"></span>
     </div>
     <div class="mb-3">
-        <label for="imagen" class="form-label">Imagen de portada</label>
-        <input type="file" id="imagen" name="imagen" class="form-control" />
+        <label asp-for="CategoriaId" class="form-label">Categoría</label>
+        <select asp-for="CategoriaId" asp-items="ViewBag.Categorias" class="form-select">
+            <option value="">-- Seleccione una categoría --</option>
+        </select>
+        <span asp-validation-for="CategoriaId" class="text-danger"></span>
     </div>
-    <button type="submit" class="btn btn-primary">Crear</button>
+    <button type="submit" class="btn btn-success">Guardar</button>
     <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
 </form>
 

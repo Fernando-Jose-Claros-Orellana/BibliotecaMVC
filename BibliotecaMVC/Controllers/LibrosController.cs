@@ -1,177 +1,68 @@
+using BibliotecaMVC.Data;
 using BibliotecaMVC.Models;
-using BibliotecaMVC.Servicios;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace BibliotecaMVC.Controllers
 {
     public class LibrosController : Controller
     {
-        private readonly ILibroService _libroService;
+        private readonly BibliotecaContext _context;
 
-        public LibrosController(ILibroService libroService)
+        public LibrosController(BibliotecaContext context)
         {
-            _libroService = libroService;
+            _context = context;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var libros = _libroService.ObtenerTodos();
+            var libros = await _context.Libros
+                .Include(l => l.Autor)
+                .Include(l => l.Categoria)
+                .OrderBy(l => l.Titulo)
+                .ToListAsync();
+
             return View(libros);
         }
 
-        public IActionResult Details(int id)
+        public async Task<IActionResult> Create()
         {
-            Libro? libro = _libroService.ObtenerPorId(id);
-
-            if (libro == null)
-            {
-                return NotFound();
-            }
-
-            return View(libro);
-        }
-
-        public IActionResult Create()
-        {
+            await CargarListasAsync();
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Libro libro, IFormFile? imagen)
+        public async Task<IActionResult> Create(Libro libro)
         {
             if (!ModelState.IsValid)
             {
+                await CargarListasAsync(libro.AutorId, libro.CategoriaId);
                 return View(libro);
             }
 
-            libro.Id = _libroService.ObtenerSiguienteId();
+            _context.Libros.Add(libro);
+            await _context.SaveChangesAsync();
 
-            if (imagen != null && imagen.Length > 0)
-            {
-                string carpetaImagenes = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
-                Directory.CreateDirectory(carpetaImagenes);
-
-                string nombreArchivo = Guid.NewGuid().ToString() + Path.GetExtension(imagen.FileName);
-                string rutaArchivo = Path.Combine(carpetaImagenes, nombreArchivo);
-
-                using (FileStream stream = new FileStream(rutaArchivo, FileMode.Create))
-                {
-                    await imagen.CopyToAsync(stream);
-                }
-
-                libro.ImagenUrl = "/images/" + nombreArchivo;
-            }
-
-            _libroService.Agregar(libro);
+            TempData["SuccessMessage"] = "Libro guardado correctamente.";
 
             return RedirectToAction(nameof(Index));
         }
 
-        public IActionResult Edit(int id)
+        private async Task CargarListasAsync(int? autorSeleccionado = null, int? categoriaSeleccionada = null)
         {
-            Libro? libro = _libroService.ObtenerPorId(id);
+            ViewBag.Autores = new SelectList(
+                await _context.Autores.OrderBy(a => a.Nombre).ToListAsync(),
+                "Id",
+                "Nombre",
+                autorSeleccionado);
 
-            if (libro == null)
-            {
-                return NotFound();
-            }
-
-            return View(libro);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Libro libro, IFormFile? imagen)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View(libro);
-            }
-
-            Libro? libroExistente = _libroService.ObtenerPorId(libro.Id);
-
-            if (libroExistente == null)
-            {
-                return NotFound();
-            }
-
-            libroExistente.Titulo = libro.Titulo;
-            libroExistente.Autor = libro.Autor;
-            libroExistente.Categoria = libro.Categoria;
-            libroExistente.Precio = libro.Precio;
-            libroExistente.Disponible = libro.Disponible;
-
-            if (imagen != null && imagen.Length > 0)
-            {
-                string carpetaImagenes = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
-                Directory.CreateDirectory(carpetaImagenes);
-
-                string nombreArchivo = Guid.NewGuid().ToString() + Path.GetExtension(imagen.FileName);
-                string rutaArchivo = Path.Combine(carpetaImagenes, nombreArchivo);
-
-                using (FileStream stream = new FileStream(rutaArchivo, FileMode.Create))
-                {
-                    await imagen.CopyToAsync(stream);
-                }
-
-                string? imagenAnterior = libroExistente.ImagenUrl;
-                libroExistente.ImagenUrl = "/images/" + nombreArchivo;
-
-                if (!string.IsNullOrEmpty(imagenAnterior))
-                {
-                    string nombreAnterior = Path.GetFileName(imagenAnterior);
-                    string rutaAnterior = Path.Combine(carpetaImagenes, nombreAnterior);
-
-                    if (System.IO.File.Exists(rutaAnterior))
-                    {
-                        System.IO.File.Delete(rutaAnterior);
-                    }
-                }
-            }
-
-            _libroService.Actualizar(libroExistente);
-
-            return RedirectToAction(nameof(Index));
-        }
-
-        public IActionResult Delete(int id)
-        {
-            Libro? libro = _libroService.ObtenerPorId(id);
-
-            if (libro == null)
-            {
-                return NotFound();
-            }
-
-            return View(libro);
-        }
-
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed(int id)
-        {
-            Libro? libro = _libroService.ObtenerPorId(id);
-
-            if (libro == null)
-            {
-                return NotFound();
-            }
-
-            if (!string.IsNullOrEmpty(libro.ImagenUrl))
-            {
-                string carpetaImagenes = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
-                string nombreArchivo = Path.GetFileName(libro.ImagenUrl);
-                string rutaArchivo = Path.Combine(carpetaImagenes, nombreArchivo);
-
-                if (System.IO.File.Exists(rutaArchivo))
-                {
-                    System.IO.File.Delete(rutaArchivo);
-                }
-            }
-
-            _libroService.Eliminar(id);
-            return RedirectToAction(nameof(Index));
+            ViewBag.Categorias = new SelectList(
+                await _context.Set<Categoria>().OrderBy(c => c.Nombre).ToListAsync(),
+                "Id",
+                "Nombre",
+                categoriaSeleccionada);
         }
 
     }

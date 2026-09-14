@@ -1,61 +1,52 @@
 @model IEnumerable<BibliotecaMVC.Models.Libro>
 @{
-    ViewData["Title"] = "Libros";
+    ViewData["Title"] = "Listado de libros";
+    var successMessage = TempData["SuccessMessage"] as string;
 }
 
-<h2>Catálogo de libros</h2>
-<p>Total de libros: @Model.Count()</p>
+<h2>Listado de libros</h2>
 
-<a asp-action="Create" class="btn btn-primary mb-3">Nuevo libro</a>
+@if (!string.IsNullOrEmpty(successMessage))
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @successMessage
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+    </div>
+}
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Título</th>
-            <th>Autor</th>
-            <th>Categoría</th>
-            <th>Precio</th>
-            <th>Estado</th>
-            <th>Imagen</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var libro in Model)
-        {
+<a asp-action="Create" class="btn btn-primary mb-3">Agregar libro</a>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">No hay libros registrados.</div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Título</th>
+                    <th>Autor</th>
+                    <th>Categoría</th>
+                    <th>ISBN</th>
+                    <th>Año de publicación</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var libro in Model)
+            {
             <tr>
                 <td>@libro.Id</td>
                 <td>@libro.Titulo</td>
-                <td>@libro.Autor</td>
-                <td>@libro.Categoria</td>
-                <td>$@libro.Precio</td>
-                <td>
-                    @if (libro.Disponible)
-                    {
-                        <span class="badge bg-success">Disponible</span>
-                    }
-                    else
-                    {
-                        <span class="badge bg-danger">Prestado</span>
-                    }
-                </td>
-                <td>
-                    @if (!string.IsNullOrEmpty(libro.ImagenUrl))
-                    {
-                        <img src="@libro.ImagenUrl" alt="Portada de @libro.Titulo" style="width: 60px; height: 80px; object-fit: cover;" />
-                    }
-                    else
-                    {
-                        <span>Sin imagen</span>
-                    }
-                </td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@libro.Id" class="btn btn-primary">Ver</a>
-                    <a asp-action="Edit" asp-route-id="@libro.Id" class="btn btn-warning">Editar</a>
-                    <a asp-action="Delete" asp-route-id="@libro.Id" class="btn btn-danger">Eliminar</a>
-                </td>
+                <td>@libro.Autor?.Nombre</td>
+                <td>@libro.Categoria?.Nombre</td>
+                <td>@(string.IsNullOrWhiteSpace(libro.ISBN) ? "-" : libro.ISBN)</td>
+                <td>@(libro.AnioPublicacion.HasValue ? libro.AnioPublicacion.Value.ToString() : "-")</td>
             </tr>
-        }
-    </tbody>
-</table>
+            }
+            </tbody>
+        </table>
+    </div>
+}
