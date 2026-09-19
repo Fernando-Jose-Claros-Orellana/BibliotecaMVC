@@ -50,6 +50,67 @@ namespace BibliotecaMVC.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        public async Task<IActionResult> Edit(int id)
+        {
+            var libro = await _context.Libros.FindAsync(id);
+
+            if (libro == null)
+            {
+                return NotFound();
+            }
+
+            await CargarListasAsync(libro.AutorId, libro.CategoriaId);
+            return View(libro);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, Libro libro)
+        {
+            if (id != libro.Id)
+            {
+                return BadRequest();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                await CargarListasAsync(libro.AutorId, libro.CategoriaId);
+                return View(libro);
+            }
+
+            var existe = await _context.Libros.AnyAsync(l => l.Id == id);
+
+            if (!existe)
+            {
+                return NotFound();
+            }
+
+            _context.Libros.Update(libro);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Libro actualizado correctamente.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var libro = await _context.Libros.FindAsync(id);
+
+            if (libro == null)
+            {
+                return NotFound();
+            }
+
+            _context.Libros.Remove(libro);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Libro eliminado correctamente.";
+            return RedirectToAction(nameof(Index));
+        }
+
         private async Task CargarListasAsync(int? autorSeleccionado = null, int? categoriaSeleccionada = null)
         {
             ViewBag.Autores = new SelectList(

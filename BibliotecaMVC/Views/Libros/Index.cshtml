@@ -32,6 +32,7 @@ else
                     <th>Categoría</th>
                     <th>ISBN</th>
                     <th>Año de publicación</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -44,9 +45,38 @@ else
                 <td>@libro.Categoria?.Nombre</td>
                 <td>@(string.IsNullOrWhiteSpace(libro.ISBN) ? "-" : libro.ISBN)</td>
                 <td>@(libro.AnioPublicacion.HasValue ? libro.AnioPublicacion.Value.ToString() : "-")</td>
+                <td>
+                    <a asp-action="Edit"
+                       asp-route-id="@libro.Id"
+                       class="btn btn-warning btn-sm">
+                        Editar
+                    </a>
+                    <form asp-action="Delete"
+                          asp-route-id="@libro.Id"
+                          method="post"
+                          class="d-inline swal-delete-form">
+                        <button type="submit" class="btn btn-danger btn-sm">
+                            Eliminar
+                        </button>
+                    </form>
+                </td>
             </tr>
             }
             </tbody>
         </table>
     </div>
+}
+
+@if (!string.IsNullOrEmpty(successMessage))
+{
+    <script>
+        const libroSuccessMessage = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(successMessage));
+
+        Swal.fire({
+            icon: 'success',
+            title: 'Éxito',
+            text: libroSuccessMessage,
+            confirmButtonText: 'Aceptar'
+        });
+    </script>
 }

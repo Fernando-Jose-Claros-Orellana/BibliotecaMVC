@@ -1,56 +1,56 @@
 @model BibliotecaMVC.Models.Libro
+
 @{
     ViewData["Title"] = "Editar libro";
 }
 
-<h2>Editar libro</h2>
+<div class="card shadow-sm">
+    <div class="card-body">
+        <h2 class="card-title">Editar libro</h2>
 
-<form asp-action="Edit" method="post" enctype="multipart/form-data">
-    <input type="hidden" asp-for="Id" />
-    <div class="mb-3">
-        <label asp-for="Titulo" class="form-label"></label>
-        <input asp-for="Titulo" class="form-control" />
-        <span asp-validation-for="Titulo" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label asp-for="Autor" class="form-label"></label>
-        <input asp-for="Autor" class="form-control" />
-        <span asp-validation-for="Autor" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label asp-for="Categoria" class="form-label"></label>
-        <input asp-for="Categoria" class="form-control" />
-        <span asp-validation-for="Categoria" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label asp-for="Precio" class="form-label"></label>
-        <input asp-for="Precio" type="number" step="0.01" class="form-control" />
-        <span asp-validation-for="Precio" class="text-danger"></span>
-    </div>
-    <div class="form-check mb-3">
-        <input asp-for="Disponible" class="form-check-input" />
-        <label asp-for="Disponible" class="form-check-label"></label>
-        <span asp-validation-for="Disponible" class="text-danger"></span>
-    </div>
-    @if (!string.IsNullOrEmpty(Model.ImagenUrl))
-    {
-        <div class="mb-3">
-            <label class="form-label">Imagen actual</label><br />
-            <img src="@Model.ImagenUrl"
-                 alt="Portada actual de @Model.Titulo"
-                 style="width: 120px; height: 160px; object-fit: cover;"
-                 class="img-thumbnail" />
-        </div>
-    }
+        <form asp-action="Edit" method="post" class="swal-save-form">
+            <input asp-for="Id" type="hidden" />
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-    <div class="mb-3">
-        <label for="imagen" class="form-label">Nueva imagen de portada (opcional)</label>
-        <input type="file" id="imagen" name="imagen" class="form-control" />
-        <small class="text-muted">Si no seleccionas una imagen, se conservará la actual.</small>
+            <div class="mb-3">
+                <label asp-for="Titulo" class="form-label"></label>
+                <input asp-for="Titulo" class="form-control" />
+                <span asp-validation-for="Titulo" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="ISBN" class="form-label"></label>
+                <input asp-for="ISBN" class="form-control" />
+                <span asp-validation-for="ISBN" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="AnioPublicacion" class="form-label">Año de publicación</label>
+                <input asp-for="AnioPublicacion" type="number" class="form-control" />
+                <span asp-validation-for="AnioPublicacion" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="AutorId" class="form-label">Autor</label>
+                <select asp-for="AutorId" asp-items="ViewBag.Autores" class="form-select">
+                    <option value="">-- Seleccione un autor --</option>
+                </select>
+                <span asp-validation-for="AutorId" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="CategoriaId" class="form-label">Categoría</label>
+                <select asp-for="CategoriaId" asp-items="ViewBag.Categorias" class="form-select">
+                    <option value="">-- Seleccione una categoría --</option>
+                </select>
+                <span asp-validation-for="CategoriaId" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-success">Guardar cambios</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+        </form>
     </div>
-    <button type="submit" class="btn btn-warning">Guardar cambios</button>
-    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
-</form>
+</div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
