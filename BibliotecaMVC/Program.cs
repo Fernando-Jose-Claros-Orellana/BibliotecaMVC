@@ -1,4 +1,5 @@
 using BibliotecaMVC.Data;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,6 +8,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<BibliotecaContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("BibliotecaDB")));
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+    .AddEntityFrameworkStores<BibliotecaContext>();
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Account/Login";
+});
 builder.Services.AddScoped<BibliotecaMVC.Servicios.ILibroService, BibliotecaMVC.Servicios.LibroService>();
 builder.Services.AddScoped<BibliotecaMVC.Servicios.IAutorService, BibliotecaMVC.Servicios.AutorServiceAlternativo>();
 
@@ -24,6 +31,7 @@ app.UseHttpsRedirection();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();
