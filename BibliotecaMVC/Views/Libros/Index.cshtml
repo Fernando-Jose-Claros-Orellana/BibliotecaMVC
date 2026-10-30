@@ -3,7 +3,7 @@
     ViewData["Title"] = "Listado de libros";
     var successMessage = TempData["SuccessMessage"] as string;
     var puedeCrearEditar = User.IsInRole("admin") || User.IsInRole("bibliotecario");
-    var puedeEliminar = User.IsInRole("admin");
+    var puedeEliminar = User.IsInRole("admin") || User.IsInRole("bibliotecario");
 }
 
 <h2>Listado de libros</h2>
