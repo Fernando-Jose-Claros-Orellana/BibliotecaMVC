@@ -2,8 +2,23 @@
     ViewData["Title"] = "Acceso denegado";
 }
 
-<div class="alert alert-warning mt-4" role="alert">
-    <h1 class="h3 alert-heading">Acceso denegado</h1>
-    <p class="mb-3">No tienes permisos para realizar esta operación.</p>
-    <a asp-controller="Home" asp-action="Index" class="btn btn-primary">Regresar al inicio</a>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-10 col-lg-8">
+            <section class="card border-0 shadow-sm rounded-4 text-center">
+                <div class="card-body p-4 p-md-5">
+                    <div class="display-1 text-primary mb-3" role="img" aria-label="Acceso restringido">🔒</div>
+                    <h1 class="h2 text-primary mb-3">Acceso denegado</h1>
+                    <p class="lead text-secondary mb-4">
+                        No tienes permisos para realizar esta operación.
+                    </p>
+
+                    <div class="d-flex flex-column flex-sm-row justify-content-center gap-2">
+                        <a asp-controller="Home" asp-action="Index" class="btn btn-primary">Regresar al inicio</a>
+                        <a asp-controller="Home" asp-action="About" class="btn btn-outline-secondary">Acerca de la biblioteca</a>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
 </div>

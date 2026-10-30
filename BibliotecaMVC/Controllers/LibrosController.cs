@@ -10,29 +10,53 @@ namespace BibliotecaMVC.Controllers
     public class LibrosController : Controller
     {
         private readonly BibliotecaContext _context;
+        private readonly ILogger<LibrosController> _logger;
 
-        public LibrosController(BibliotecaContext context)
+        public LibrosController(BibliotecaContext context, ILogger<LibrosController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         [Authorize(Roles = "admin,bibliotecario,usuario")]
         public async Task<IActionResult> Index()
         {
-            var libros = await _context.Libros
-                .Include(l => l.Autor)
-                .Include(l => l.Categoria)
-                .OrderBy(l => l.Titulo)
-                .ToListAsync();
+            _logger.LogInformation("Starting book list retrieval.");
 
-            return View(libros);
+            try
+            {
+                var libros = await _context.Libros
+                    .Include(l => l.Autor)
+                    .Include(l => l.Categoria)
+                    .OrderBy(l => l.Titulo)
+                    .ToListAsync();
+
+                _logger.LogInformation("Book list retrieved successfully. Count: {BookCount}", libros.Count);
+                return View(libros);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while retrieving the book list.");
+                throw;
+            }
         }
 
         [Authorize(Roles = "admin,bibliotecario")]
         public async Task<IActionResult> Create()
         {
-            await CargarListasAsync();
-            return View();
+            _logger.LogInformation("Opening the create book form.");
+
+            try
+            {
+                await CargarListasAsync();
+                _logger.LogInformation("Book create form loaded successfully.");
+                return View();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while preparing the create book form.");
+                throw;
+            }
         }
 
         [HttpPost]
@@ -40,32 +64,56 @@ namespace BibliotecaMVC.Controllers
         [Authorize(Roles = "admin,bibliotecario")]
         public async Task<IActionResult> Create(Libro libro)
         {
-            if (!ModelState.IsValid)
+            _logger.LogInformation("Starting book creation.");
+
+            try
             {
-                await CargarListasAsync(libro.AutorId, libro.CategoriaId);
-                return View(libro);
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogWarning("Book creation was rejected because the submitted model is invalid.");
+                    await CargarListasAsync(libro.AutorId, libro.CategoriaId);
+                    return View(libro);
+                }
+
+                _context.Libros.Add(libro);
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Book created successfully. {LibroId}", libro.Id);
+                TempData["SuccessMessage"] = "Libro guardado correctamente.";
+
+                return RedirectToAction(nameof(Index));
             }
-
-            _context.Libros.Add(libro);
-            await _context.SaveChangesAsync();
-
-            TempData["SuccessMessage"] = "Libro guardado correctamente.";
-
-            return RedirectToAction(nameof(Index));
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while creating a book.");
+                throw;
+            }
         }
 
         [Authorize(Roles = "admin,bibliotecario")]
         public async Task<IActionResult> Edit(int id)
         {
-            var libro = await _context.Libros.FindAsync(id);
+            _logger.LogInformation("Starting book edit lookup. {LibroId}", id);
 
-            if (libro == null)
+            try
             {
-                return NotFound();
-            }
+                var libro = await _context.Libros.FindAsync(id);
 
-            await CargarListasAsync(libro.AutorId, libro.CategoriaId);
-            return View(libro);
+                if (libro == null)
+                {
+                    _logger.LogWarning("Book not found for editing. {LibroId}", id);
+                    return NotFound();
+                }
+
+                await CargarListasAsync(libro.AutorId, libro.CategoriaId);
+                _logger.LogInformation("Book edit form loaded successfully. {LibroId}", id);
+                return View(libro);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while loading a book for editing. {LibroId}", id);
+                throw;
+            }
         }
 
         [HttpPost]
@@ -73,29 +121,43 @@ namespace BibliotecaMVC.Controllers
         [Authorize(Roles = "admin,bibliotecario")]
         public async Task<IActionResult> Edit(int id, Libro libro)
         {
-            if (id != libro.Id)
+            _logger.LogInformation("Starting book update. {LibroId}", id);
+
+            try
             {
-                return BadRequest();
-            }
+                if (id != libro.Id)
+                {
+                    _logger.LogWarning("Book update rejected because route and model IDs do not match. {LibroId}", id);
+                    return BadRequest();
+                }
 
-            if (!ModelState.IsValid)
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogWarning("Book update rejected because the submitted model is invalid. {LibroId}", id);
+                    await CargarListasAsync(libro.AutorId, libro.CategoriaId);
+                    return View(libro);
+                }
+
+                var existe = await _context.Libros.AnyAsync(l => l.Id == id);
+
+                if (!existe)
+                {
+                    _logger.LogWarning("Book not found for update. {LibroId}", id);
+                    return NotFound();
+                }
+
+                _context.Libros.Update(libro);
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Book updated successfully. {LibroId}", id);
+                TempData["SuccessMessage"] = "Libro actualizado correctamente.";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
             {
-                await CargarListasAsync(libro.AutorId, libro.CategoriaId);
-                return View(libro);
+                _logger.LogError(ex, "An error occurred while updating a book. {LibroId}", id);
+                throw;
             }
-
-            var existe = await _context.Libros.AnyAsync(l => l.Id == id);
-
-            if (!existe)
-            {
-                return NotFound();
-            }
-
-            _context.Libros.Update(libro);
-            await _context.SaveChangesAsync();
-
-            TempData["SuccessMessage"] = "Libro actualizado correctamente.";
-            return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
@@ -104,18 +166,30 @@ namespace BibliotecaMVC.Controllers
         [Authorize(Roles = "admin,bibliotecario")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var libro = await _context.Libros.FindAsync(id);
+            _logger.LogInformation("Starting book deletion. {LibroId}", id);
 
-            if (libro == null)
+            try
             {
-                return NotFound();
+                var libro = await _context.Libros.FindAsync(id);
+
+                if (libro == null)
+                {
+                    _logger.LogWarning("Book not found for deletion. {LibroId}", id);
+                    return NotFound();
+                }
+
+                _context.Libros.Remove(libro);
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Book deleted successfully. {LibroId}", id);
+                TempData["SuccessMessage"] = "Libro eliminado correctamente.";
+                return RedirectToAction(nameof(Index));
             }
-
-            _context.Libros.Remove(libro);
-            await _context.SaveChangesAsync();
-
-            TempData["SuccessMessage"] = "Libro eliminado correctamente.";
-            return RedirectToAction(nameof(Index));
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while deleting a book. {LibroId}", id);
+                throw;
+            }
         }
 
         private async Task CargarListasAsync(int? autorSeleccionado = null, int? categoriaSeleccionada = null)
