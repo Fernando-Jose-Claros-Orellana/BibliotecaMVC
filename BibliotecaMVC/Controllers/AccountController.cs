@@ -92,7 +92,19 @@ public class AccountController : Controller
 
         if (resultado.Succeeded)
         {
-            return RedirectToAction(nameof(Login));
+            IdentityResult asignacionResultado = await _userManager.AddToRoleAsync(usuario, "usuario");
+
+            if (asignacionResultado.Succeeded)
+            {
+                return RedirectToAction(nameof(Login));
+            }
+
+            foreach (IdentityError error in asignacionResultado.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+
+            return View(model);
         }
 
         foreach (IdentityError error in resultado.Errors)
@@ -109,5 +121,11 @@ public class AccountController : Controller
     {
         await _signInManager.SignOutAsync();
         return RedirectToAction("Index", "Home");
+    }
+
+    [HttpGet]
+    public IActionResult AccessDenied()
+    {
+        return View();
     }
 }

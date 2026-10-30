@@ -13,11 +13,51 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Account/Login";
+    options.AccessDeniedPath = "/Account/AccessDenied";
 });
 builder.Services.AddScoped<BibliotecaMVC.Servicios.ILibroService, BibliotecaMVC.Servicios.LibroService>();
 builder.Services.AddScoped<BibliotecaMVC.Servicios.IAutorService, BibliotecaMVC.Servicios.AutorServiceAlternativo>();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    string[] roles = ["admin", "bibliotecario", "usuario"];
+
+    foreach (string roleName in roles)
+    {
+        if (!await roleManager.RoleExistsAsync(roleName))
+        {
+            IdentityResult roleResult = await roleManager.CreateAsync(new IdentityRole(roleName));
+
+            if (!roleResult.Succeeded)
+            {
+                throw new InvalidOperationException(
+                    $"No se pudo crear el rol '{roleName}': {string.Join(", ", roleResult.Errors.Select(error => error.Description))}");
+            }
+        }
+    }
+
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+    var usuarios = await userManager.Users.ToListAsync();
+
+    foreach (IdentityUser usuario in usuarios)
+    {
+        var rolesUsuario = await userManager.GetRolesAsync(usuario);
+
+        if (rolesUsuario.Count == 0)
+        {
+            IdentityResult assignmentResult = await userManager.AddToRoleAsync(usuario, "usuario");
+
+            if (!assignmentResult.Succeeded)
+            {
+                throw new InvalidOperationException(
+                    $"No se pudo asignar el rol básico al usuario: {string.Join(", ", assignmentResult.Errors.Select(error => error.Description))}");
+            }
+        }
+    }
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

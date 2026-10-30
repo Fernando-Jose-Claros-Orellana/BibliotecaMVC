@@ -2,6 +2,8 @@
 @{
     ViewData["Title"] = "Listado de libros";
     var successMessage = TempData["SuccessMessage"] as string;
+    var puedeCrearEditar = User.IsInRole("admin") || User.IsInRole("bibliotecario");
+    var puedeEliminar = User.IsInRole("admin");
 }
 
 <h2>Listado de libros</h2>
@@ -14,7 +16,10 @@
     </div>
 }
 
-<a asp-action="Create" class="btn btn-primary mb-3">Agregar libro</a>
+@if (puedeCrearEditar)
+{
+    <a asp-action="Create" class="btn btn-primary mb-3">Agregar libro</a>
+}
 
 @if (!Model.Any())
 {
@@ -46,19 +51,25 @@ else
                 <td>@(string.IsNullOrWhiteSpace(libro.ISBN) ? "-" : libro.ISBN)</td>
                 <td>@(libro.AnioPublicacion.HasValue ? libro.AnioPublicacion.Value.ToString() : "-")</td>
                 <td>
-                    <a asp-action="Edit"
-                       asp-route-id="@libro.Id"
-                       class="btn btn-warning btn-sm">
-                        Editar
-                    </a>
-                    <form asp-action="Delete"
-                          asp-route-id="@libro.Id"
-                          method="post"
-                          class="d-inline swal-delete-form">
-                        <button type="submit" class="btn btn-danger btn-sm">
-                            Eliminar
-                        </button>
-                    </form>
+                    @if (puedeCrearEditar)
+                    {
+                        <a asp-action="Edit"
+                           asp-route-id="@libro.Id"
+                           class="btn btn-warning btn-sm">
+                            Editar
+                        </a>
+                    }
+                    @if (puedeEliminar)
+                    {
+                        <form asp-action="Delete"
+                              asp-route-id="@libro.Id"
+                              method="post"
+                              class="d-inline swal-delete-form">
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                Eliminar
+                            </button>
+                        </form>
+                    }
                 </td>
             </tr>
             }
