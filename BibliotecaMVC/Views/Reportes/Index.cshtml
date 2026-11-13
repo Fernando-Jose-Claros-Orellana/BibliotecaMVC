@@ -1,0 +1,67 @@
+@using Microsoft.AspNetCore.Mvc.Rendering
+@{
+    ViewData["Title"] = "Reportes";
+    var autores = ViewData["Autores"] as IEnumerable<SelectListItem> ?? Enumerable.Empty<SelectListItem>();
+    var categorias = ViewData["Categorias"] as IEnumerable<SelectListItem> ?? Enumerable.Empty<SelectListItem>();
+    var autorId = ViewData["AutorId"]?.ToString();
+    var categoriaId = ViewData["CategoriaId"]?.ToString();
+    var cantidadLibros = ViewData["CantidadLibros"] as int? ?? 0;
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <h1 class="mb-4">Reportes</h1>
+
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="h4 card-title">Reporte de Libros</h2>
+                <p class="card-text">
+                    Filtra los libros por autor y categoría antes de generar el reporte.
+                </p>
+
+                <form asp-controller="Reportes" asp-action="Index" method="get" class="mb-4">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="autorId" class="form-label">Autor</label>
+                            <select id="autorId" name="autorId" class="form-select">
+                                <option value="">Todos los autores</option>
+                                @foreach (var autor in autores)
+                                {
+                                    <option value="@autor.Value" selected="@(autor.Value == autorId)">@autor.Text</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="categoriaId" class="form-label">Categoría</label>
+                            <select id="categoriaId" name="categoriaId" class="form-select">
+                                <option value="">Todas las categorías</option>
+                                @foreach (var categoria in categorias)
+                                {
+                                    <option value="@categoria.Value" selected="@(categoria.Value == categoriaId)">@categoria.Text</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-secondary mt-3">Aplicar filtros</button>
+                </form>
+
+                <p class="fw-semibold" role="status">Libros encontrados: @cantidadLibros</p>
+
+                <a asp-controller="Reportes"
+                   asp-action="GenerarPdf"
+                   asp-route-autorId="@autorId"
+                   asp-route-categoriaId="@categoriaId"
+                   class="btn btn-primary">
+                    Generar reporte PDF
+                </a>
+                <a asp-controller="Reportes"
+                   asp-action="GenerarExcel"
+                   asp-route-autorId="@autorId"
+                   asp-route-categoriaId="@categoriaId"
+                   class="btn btn-success ms-2">
+                    Exportar a Excel
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
